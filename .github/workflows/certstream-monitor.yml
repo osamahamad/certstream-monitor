@@ -61,19 +61,41 @@ jobs:
         # Create output directory
         mkdir -p output
         
-        # Run certstream-monitor for 5 hours (GitHub Actions limit) and pipe output to notify
-        ./certstream-monitor -list targets.txt -out ./output -run-for 1m | \
+        # Run certstream-monitor for 5 minutes and pipe output to notify
+        ./certstream-monitor -list targets.txt -out ./output -run-for 5m | \
         while IFS= read -r line; do
           if [[ $line == *"[NEW]"* ]]; then
             echo "$line" | notify -silent -bulk
           fi
         done
         
+        # Debug: List all files in output directory
+        echo "Files in output directory:"
+        ls -la output/
+        
+        # Debug: Check if CSV files exist and their content
+        if [ -f "output/all_subdomains.log" ]; then
+          echo "all_subdomains.log exists, content:"
+          head -5 output/all_subdomains.log
+        else
+          echo "all_subdomains.log does not exist"
+        fi
+        
+        if [ -f "output/live_subdomains.log" ]; then
+          echo "live_subdomains.log exists, content:"
+          head -5 output/live_subdomains.log
+        else
+          echo "live_subdomains.log does not exist"
+        fi
+        
     - name: Commit and push results
       run: |
         # Configure git
         git config --local user.email "action@github.com"
         git config --local user.name "Osama Hamad"
+        
+        # Create empty CSV files if they don't exist (for tracking)
+        touch output/all_subdomains.log output/live_subdomains.log
         
         # Add results to git
         git add output/
