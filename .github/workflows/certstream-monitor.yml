@@ -61,8 +61,8 @@ jobs:
         # Create output directory
         mkdir -p output
         
-        # Run certstream-monitor for 5 minutes and pipe output to notify
-        ./certstream-monitor -list targets.txt -out ./output -run-for 5m | \
+        # Run certstream-monitor for 1 minutes and pipe output to notify
+        ./certstream-monitor -list targets.txt -out ./output -run-for 1m | \
         while IFS= read -r line; do
           if [[ $line == *"[NEW]"* ]]; then
             echo "$line" | notify -silent -bulk
