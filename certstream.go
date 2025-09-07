@@ -140,6 +140,14 @@ func main() {
         }
 
         log.Printf("Certstream Monitor finished run window; exiting cleanly.")
+        
+        // Final flush to ensure all data is written to files
+        if allLog != nil {
+                allLog.Sync()
+        }
+        if liveLog != nil {
+                liveLog.Sync()
+        }
 }
 
 func consumeLoopWithContext(
@@ -197,12 +205,14 @@ func consumeLoopWithContext(
                                 fmt.Fprintf(allLog, "%s,%s,%d,%d,%d,%d,%q,%s\n",
                                         time.Now().Format(time.RFC3339),
                                         host, firstSeen, lastSeen, domainAgeDays, status, sanitizeCSV(title), scheme)
+                                allLog.Sync() // Ensure data is written to disk
 
                                 // CSV (live): ts,host,domain_age_days,status,title,scheme
                                 if live && seen.After(ageCutoff) {
                                         fmt.Fprintf(liveLog, "%s,%s,%d,%d,%q,%s\n",
                                                 time.Now().Format(time.RFC3339),
                                                 host, domainAgeDays, status, sanitizeCSV(title), scheme)
+                                        liveLog.Sync() // Ensure data is written to disk
                                         markLive(db, host)
                                 }
 
