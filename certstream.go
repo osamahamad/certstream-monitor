@@ -61,11 +61,11 @@ func init() {
         flag.StringVar(&flagListPath, "list", "targets.txt", "Path to bb/vdp programs list (URLs or domains)")
         flag.StringVar(&flagOutDir, "out", ".", "Output directory for DB and logs")
         flag.IntVar(&flagAgeDays, "age", defaultAgeDays, "Only log to live_subdomains if cert seen within <= N days")
-        flag.BoolVar(&flagSkipTLS, "insecure", false, "Skip TLS verification when probing HTTPS")
+	flag.BoolVar(&flagSkipTLS, "insecure", true, "Skip TLS verification when probing HTTPS")
         flag.DurationVar(&flagHTTPTO, "probe-timeout", 5*time.Second, "Timeout for liveness HTTP/HTTPS probes")
         flag.BoolVar(&flagHTTPSOnly, "https-only", false, "Probe only HTTPS (by default probes HTTP then HTTPS)")
         flag.IntVar(&flagWSTimeout, "ws-timeout", 15, "WebSocket dial timeout (seconds)")
-        flag.DurationVar(&flagRunFor, "run-for", 5*time.Hour+30*time.Minute, "How long to stream before exiting (e.g., 5h30m)")
+	flag.DurationVar(&flagRunFor, "run-for", 0, "How long to stream before exiting (0 = unlimited, e.g., 5h30m)")
         flag.StringVar(&flagCSURL, "certstream-url", envOr("CERTSTREAM_URL", certstreamURLDefault), "CertStream WSS URL")
 }
 
@@ -102,8 +102,14 @@ func main() {
         }
         defer liveLog.Close()
 
-        ageCutoff := time.Now().AddDate(0, 0, -flagAgeDays)
-        deadline := time.Now().Add(flagRunFor)
+	ageCutoff := time.Now().AddDate(0, 0, -flagAgeDays)
+	var deadline time.Time
+	if flagRunFor == 0 {
+		// Unlimited runtime - set deadline far in the future
+		deadline = time.Now().AddDate(100, 0, 0)
+	} else {
+		deadline = time.Now().Add(flagRunFor)
+	}
 
         // Connect/consume with jittery exponential backoff until deadline.
         backoff := time.Second

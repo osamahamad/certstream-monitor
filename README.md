@@ -46,11 +46,11 @@ echo "target.com" >> targets.txt
 | `-list` | `targets.txt` | Path to file containing target domains (one per line) |
 | `-out` | `.` | Output directory for database and log files |
 | `-age` | `90` | Only log to live_subdomains if cert seen within N days |
-| `-insecure` | `false` | Skip TLS verification when probing HTTPS |
+| `-insecure` | `true` | Skip TLS verification when probing HTTPS |
 | `-probe-timeout` | `5s` | Timeout for HTTP/HTTPS liveness probes |
 | `-https-only` | `false` | Probe only HTTPS (default: tries HTTP then HTTPS) |
 | `-ws-timeout` | `15` | WebSocket dial timeout in seconds |
-| `-run-for` | `5h30m` | How long to stream before exiting |
+| `-run-for` | `0` (unlimited) | How long to stream before exiting (0 = unlimited) |
 | `-certstream-url` | `wss://certstream.calidog.io` | CertStream WebSocket URL |
 
 ### Environment Variables
@@ -66,8 +66,8 @@ echo "target.com" >> targets.txt
 # Use custom CertStream endpoint
 CERTSTREAM_URL=wss://your-certstream.com ./certstream-monitor -list targets.txt
 
-# Skip TLS verification for internal targets
-./certstream-monitor -list targets.txt -insecure
+# Run with TLS verification (insecure is true by default)
+./certstream-monitor -list targets.txt -insecure=false
 ```
 
 ## Target File Format
