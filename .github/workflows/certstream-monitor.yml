@@ -1,0 +1,87 @@
+name: CertStream Monitor
+
+on:
+  schedule:
+    # Run every 6 hours (GitHub Actions max is 6 hours per run)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+        
+    - name: Build certstream-monitor
+      run: |
+        go mod tidy
+        go build -o certstream-monitor certstream.go
+        
+    - name: Verify targets file exists
+      run: |
+        if [ ! -f "targets.txt" ]; then
+          echo "Error: targets.txt file not found in repository"
+          echo "Please create a targets.txt file with your target domains (one per line)"
+          exit 1
+        fi
+        echo "Found targets.txt with $(wc -l < targets.txt) target domains"
+        
+    - name: Download notify
+      run: |
+        go install -v github.com/projectdiscovery/notify/cmd/notify@latest
+        
+    - name: Configure notify
+      run: |
+        mkdir -p ~/.config/notify
+        cat > ~/.config/notify/provider-config.yaml << EOF
+        telegram:
+          - id: "tel"
+            telegram_api_key: "$TELEGRAM_BOT_TOKEN"
+            telegram_chat_id: "$TELEGRAM_CHAT_ID"
+            telegram_format: "{{data}}"
+            telegram_parsemode: "None"
+        EOF
+        
+    - name: Run certstream-monitor with notify
+      run: |
+        # Create output directory
+        mkdir -p output
+        
+        # Run certstream-monitor for 5 hours (GitHub Actions limit) and pipe output to notify
+        ./certstream-monitor -list targets.txt -out ./output -run-for 1m | \
+        while IFS= read -r line; do
+          if [[ $line == *"[NEW]"* ]]; then
+            echo "$line" | notify -silent -bulk
+          fi
+        done
+        
+    - name: Commit and push results
+      run: |
+        # Configure git
+        git config --local user.email "action@github.com"
+        git config --local user.name "Osama Hamad"
+        
+        # Add results to git
+        git add output/
+        
+        # Commit if there are changes
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update certstream monitoring results - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        fi
