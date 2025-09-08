@@ -66,7 +66,10 @@ jobs:
         # Send notification with live subdomains file content
         if [ -f "output/live_subdomains.log" ] && [ -s "output/live_subdomains.log" ]; then
           echo "Found live subdomains, sending file content..."
-          cat output/live_subdomains.log | notify -silent -bulk
+          cat output/live_subdomains.log | awk -F',' '{
+            sub(/"/,"",$5); gsub(/"/,"",$5);  # clean quotes from title
+            printf "%s | %s | %s | %s\n", $2, $3, $4, $5
+          }' | notify -silent -bulk
         else
           echo "No live subdomains found or file doesn't exist"
           echo "No live subdomains found in this run." | notify -silent -bulk
