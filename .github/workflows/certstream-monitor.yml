@@ -53,7 +53,7 @@ jobs:
             telegram_api_key: "$TELEGRAM_BOT_TOKEN"
             telegram_chat_id: "$TELEGRAM_CHAT_ID"
             telegram_format: "{{data}}"
-            telegram_parsemode: "None"
+            telegram_parsemode: "Markdown"
         EOF
         
     - name: Run certstream-monitor with notify
