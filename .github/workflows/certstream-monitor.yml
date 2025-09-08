@@ -73,9 +73,9 @@ jobs:
           # Create simple message with code block
           {
             echo "```"
-            echo "🔍 CertStream Monitor Results"
-            echo "📊 Total Live Subdomains: $TOTAL_COUNT"
-            echo "⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo "CertStream Monitor Results"
+            echo "Total Live Subdomains: $TOTAL_COUNT"
+            echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
             echo ""
             echo "Live Subdomains:"
             echo "=================="
