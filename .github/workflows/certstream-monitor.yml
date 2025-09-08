@@ -61,8 +61,8 @@ jobs:
         # Create output directory
         mkdir -p output
         
-        # Run certstream-monitor for 1 minutes and pipe output to notify
-        ./certstream-monitor -list targets.txt -out ./output -run-for 1m
+        # Run certstream-monitor for X minutes/sec/hours and pipe output to notify
+        ./certstream-monitor -list targets.txt -out ./output -run-for 1s
         # Send notification with live subdomains file content
         if [ -f "output/live_subdomains.log" ] && [ -s "output/live_subdomains.log" ]; then
           echo "Found live subdomains, sending file content..."
