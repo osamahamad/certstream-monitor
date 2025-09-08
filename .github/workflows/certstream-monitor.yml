@@ -65,32 +65,21 @@ jobs:
         ./certstream-monitor -list targets.txt -out ./output -run-for 10s
         # Send notification with live subdomains file content
         if [ -f "output/live_subdomains.log" ] && [ -s "output/live_subdomains.log" ]; then
-          echo "Found live subdomains, sending formatted content..."
+          echo "Found live subdomains, sending content..."
           
           # Count total subdomains
           TOTAL_COUNT=$(wc -l < output/live_subdomains.log)
           
-          # Create formatted message as a single code block
+          # Create simple message with code block
           {
             echo "```"
             echo "🔍 CertStream Monitor Results"
-            echo ""
             echo "📊 Total Live Subdomains: $TOTAL_COUNT"
             echo "⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
             echo ""
-            echo "📋 Live Subdomains:"
-            echo ""
-            
-            # Add each subdomain as a formatted entry
-            while IFS=',' read -r timestamp host age status title scheme; do
-              # Format timestamp (remove Z and show only time)
-              time_only=$(echo "$timestamp" | cut -d'T' -f2 | cut -d'Z' -f1)
-              # Clean title (remove quotes)
-              clean_title=$(echo "$title" | sed 's/^"//;s/"$//')
-              # Format the entry with proper spacing
-              printf "%-8s | %-40s | %-3s | %-30s | %s\n" "$time_only" "$host" "$status" "$clean_title" "$scheme"
-            done < output/live_subdomains.log
-            
+            echo "Live Subdomains:"
+            echo "=================="
+            cat output/live_subdomains.log
             echo "```"
           } | notify -silent -bulk
         else
