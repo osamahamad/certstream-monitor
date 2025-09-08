@@ -52,7 +52,7 @@ jobs:
           - id: "tel"
             telegram_api_key: "$TELEGRAM_BOT_TOKEN"
             telegram_chat_id: "$TELEGRAM_CHAT_ID"
-            telegram_format: "<h3>Runner Results</h3></br></br><pre><code>{{data}}</code></pre>"
+            telegram_format: "<html><body><h3>Results</h3></br></br><pre><code>{{data}}</code></pre></body></html>"
             telegram_parsemode: "HTML"
         EOF
         
@@ -62,7 +62,7 @@ jobs:
         mkdir -p output
         
         # Run certstream-monitor for X minutes/sec/hours and pipe output to notify
-        ./certstream-monitor -list targets.txt -out ./output -run-for 1m
+        ./certstream-monitor -list targets.txt -out ./output -run-for 10s
         # Send notification with live subdomains file content
         if [ -f "output/live_subdomains.log" ] && [ -s "output/live_subdomains.log" ]; then
           echo "Found live subdomains, sending file content..."
