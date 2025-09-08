@@ -96,7 +96,7 @@ jobs:
           
           MESSAGE+="\`\`\`"
           
-          echo "$MESSAGE" | notify -silent -bulk
+          echo "```$MESSAGE```" | notify -silent -bulk
         else
           echo "No live subdomains found or file doesn't exist"
           echo "No live subdomains found in this run." | notify -silent -bulk
