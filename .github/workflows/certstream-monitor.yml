@@ -74,29 +74,22 @@ jobs:
           MESSAGE="🔍 *CertStream Monitor Results*\n\n"
           MESSAGE+="📊 *Total Live Subdomains:* $TOTAL_COUNT\n"
           MESSAGE+="⏰ *Time:* $(date -u '+%Y-%m-%d %H:%M:%S UTC')\n\n"
-          MESSAGE+="📋 *Live Subdomains:*\n"
-          MESSAGE+="\`\`\`\n"
+          MESSAGE+="📋 *Live Subdomains:*\n\n"
+          MESSAGE+="```\n"
           
-          # Add formatted table header
-          MESSAGE+="TIME                 | SUBDOMAIN                           | STATUS | TITLE\n"
-          MESSAGE+="---------------------|-------------------------------------|--------|------------------\n"
-          
-          # Add each subdomain as a formatted row
+          # Add each subdomain as a formatted entry
           while IFS=',' read -r timestamp host age status title scheme; do
             # Format timestamp (remove Z and show only time)
             time_only=$(echo "$timestamp" | cut -d'T' -f2 | cut -d'Z' -f1)
-            # Truncate long titles
-            short_title=$(echo "$title" | cut -c1-15)
-            if [ ${#title} -gt 15 ]; then
-              short_title="${short_title}..."
-            fi
-            # Format the row
-            MESSAGE+="$(printf "%-20s| %-35s| %-6s | %s" "$time_only" "$host" "$status" "$short_title")\n"
+            # Clean title (remove quotes)
+            clean_title=$(echo "$title" | sed 's/^"//;s/"$//')
+            # Format the entry with proper spacing
+            MESSAGE+="$(printf "%-8s | %-40s | %-3s | %-30s | %s" "$time_only" "$host" "$status" "$clean_title" "$scheme")\n"
           done < output/live_subdomains.log
           
-          MESSAGE+="\`\`\`"
+          MESSAGE+="```"
           
-          echo "```$MESSAGE```" | notify -silent -bulk
+          echo "$MESSAGE" | notify -silent -bulk
         else
           echo "No live subdomains found or file doesn't exist"
           echo "No live subdomains found in this run." | notify -silent -bulk
