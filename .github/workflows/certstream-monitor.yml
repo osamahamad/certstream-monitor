@@ -55,17 +55,6 @@ jobs:
             telegram_format: "{{data}}"
             telegram_parsemode: "None"
         EOF
-        # Debug: Show notify config (without exposing secrets)
-        echo "Notify configuration created:"
-        cat ~/.config/notify/provider-config.yaml | sed 's/telegram_api_key: .*/telegram_api_key: [HIDDEN]/'
-        
-        # Test notify configuration
-        echo "Testing notify configuration..."
-        echo "Test message from GitHub Actions" | notify -silent -bulk
-        
-        # Test with verbose output to see any errors
-        echo "Testing notify with verbose output..."
-        echo "Test message 2 from GitHub Actions" | notify -bulk
         
     - name: Run certstream-monitor with notify
       run: |
@@ -73,12 +62,15 @@ jobs:
         mkdir -p output
         
         # Run certstream-monitor for 1 minutes and pipe output to notify
-        ./certstream-monitor -list targets.txt -out ./output -run-for 1m | \
-        while IFS= read -r line; do
-          if [[ $line == *"[NEW]"* ]]; then
-            echo "$line" | notify -silent -bulk
-          fi
-        done
+        ./certstream-monitor -list targets.txt -out ./output -run-for 1m
+        # Send notification with live subdomains file content
+        if [ -f "output/live_subdomains.log" ] && [ -s "output/live_subdomains.log" ]; then
+          echo "Found live subdomains, sending file content..."
+          cat output/live_subdomains.log | notify -silent -bulk
+        else
+          echo "No live subdomains found or file doesn't exist"
+          echo "No live subdomains found in this run." | notify -silent -bulk
+        fi
         
         # Debug: List all files in output directory
         echo "Files in output directory:"
