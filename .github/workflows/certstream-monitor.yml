@@ -62,7 +62,7 @@ jobs:
         mkdir -p output
         
         # Run certstream-monitor for 1 minutes and pipe output to notify
-        ./certstream-monitor -list targets.txt -out ./output -run-for 1m
+        ./certstream-monitor -list targets.txt -out ./output -run-for 10s
         # Send notification with live subdomains file content
         if [ -f "output/live_subdomains.log" ] && [ -s "output/live_subdomains.log" ]; then
           echo "Found live subdomains, sending formatted content..."
@@ -70,12 +70,12 @@ jobs:
           # Count total subdomains
           TOTAL_COUNT=$(wc -l < output/live_subdomains.log)
           
-          # Create formatted message
-          MESSAGE="🔍 *CertStream Monitor Results*\n\n"
-          MESSAGE+="📊 *Total Live Subdomains:* $TOTAL_COUNT\n"
-          MESSAGE+="⏰ *Time:* $(date -u '+%Y-%m-%d %H:%M:%S UTC')\n\n"
-          MESSAGE+="📋 *Live Subdomains:*\n\n"
-          MESSAGE+="```\n"
+          # Create formatted message as a single code block
+          MESSAGE="```\n"
+          MESSAGE+="🔍 CertStream Monitor Results\n\n"
+          MESSAGE+="📊 Total Live Subdomains: $TOTAL_COUNT\n"
+          MESSAGE+="⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')\n\n"
+          MESSAGE+="📋 Live Subdomains:\n\n"
           
           # Add each subdomain as a formatted entry
           while IFS=',' read -r timestamp host age status title scheme; do
