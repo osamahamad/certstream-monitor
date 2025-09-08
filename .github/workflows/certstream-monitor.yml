@@ -71,25 +71,28 @@ jobs:
           TOTAL_COUNT=$(wc -l < output/live_subdomains.log)
           
           # Create formatted message as a single code block
-          MESSAGE="```\n"
-          MESSAGE+="🔍 CertStream Monitor Results\n\n"
-          MESSAGE+="📊 Total Live Subdomains: $TOTAL_COUNT\n"
-          MESSAGE+="⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')\n\n"
-          MESSAGE+="📋 Live Subdomains:\n\n"
-          
-          # Add each subdomain as a formatted entry
-          while IFS=',' read -r timestamp host age status title scheme; do
-            # Format timestamp (remove Z and show only time)
-            time_only=$(echo "$timestamp" | cut -d'T' -f2 | cut -d'Z' -f1)
-            # Clean title (remove quotes)
-            clean_title=$(echo "$title" | sed 's/^"//;s/"$//')
-            # Format the entry with proper spacing
-            MESSAGE+="$(printf "%-8s | %-40s | %-3s | %-30s | %s" "$time_only" "$host" "$status" "$clean_title" "$scheme")\n"
-          done < output/live_subdomains.log
-          
-          MESSAGE+="```"
-          
-          echo "$MESSAGE" | notify -silent -bulk
+          {
+            echo "```"
+            echo "🔍 CertStream Monitor Results"
+            echo ""
+            echo "📊 Total Live Subdomains: $TOTAL_COUNT"
+            echo "⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            echo ""
+            echo "📋 Live Subdomains:"
+            echo ""
+            
+            # Add each subdomain as a formatted entry
+            while IFS=',' read -r timestamp host age status title scheme; do
+              # Format timestamp (remove Z and show only time)
+              time_only=$(echo "$timestamp" | cut -d'T' -f2 | cut -d'Z' -f1)
+              # Clean title (remove quotes)
+              clean_title=$(echo "$title" | sed 's/^"//;s/"$//')
+              # Format the entry with proper spacing
+              printf "%-8s | %-40s | %-3s | %-30s | %s\n" "$time_only" "$host" "$status" "$clean_title" "$scheme"
+            done < output/live_subdomains.log
+            
+            echo "```"
+          } | notify -silent -bulk
         else
           echo "No live subdomains found or file doesn't exist"
           echo "No live subdomains found in this run." | notify -silent -bulk
