@@ -265,7 +265,8 @@ export DEBUG=1
 ```
 
 ### Helper
-Tune: ```awk -F',' '{print $2}' Untitled-1.txt | awk -F'.' 'NF>=2{print $(NF-1)"."$NF}' | sort | uniq -c | sort -nr | awk '$1 > 2 {print $2}'```
+Tune: ```awk -F',' '{print $2}' first_run_results.txt | awk -F'.' 'NF>=2{print $(NF-1)"."$NF}' | sort | uniq -c | sort -nr | awk
+'$1 > 2 {print $2}' > frequent_domains.txt && grep -v -f frequent_domains.txt targets.txt > temp.txt && mv temp.txt targets1.txt && rm frequent_domains.txt```
 
 
 ## 🤝 Contributing
@@ -283,6 +284,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 **⭐ Star this repository if you find it useful!**
+
 
 
 
