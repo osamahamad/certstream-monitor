@@ -264,12 +264,9 @@ export DEBUG=1
 ./certstream-monitor -list targets.txt
 ```
 
-### Performance Tips
+### Helper
+Tune: ```awk -F',' '{print $2}' Untitled-1.txt | awk -F'.' 'NF>=2{print $(NF-1)"."$NF}' | sort | uniq -c | sort -nr | awk '$1 > 2 {print $2}'```
 
-- Use specific target domains to reduce noise
-- Set appropriate `-age` values to filter old certificates
-- Use `-https-only` for faster probing if you only need HTTPS
-- Monitor disk space for large target lists
 
 ## 🤝 Contributing
 
@@ -286,6 +283,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 **⭐ Star this repository if you find it useful!**
+
 
 
 
