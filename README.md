@@ -30,7 +30,7 @@ Another Go tool that leverages certstream.calidog.io to monitor Certificate Tran
 
 ## 🤖 GitHub Actions Automation
 
-The repository includes a GitHub Actions workflow that automatically runs the certstream monitor and sends notifications. Perfect for continuous monitoring without keeping your machine running!
+The repository includes a GitHub Actions workflow that automatically runs the certstream monitor and sends notifications. Perfect for continuous monitoring without keeping your machine running! It meant to report potentially new subdomains for the target list.
 
 ### Features
 
@@ -286,5 +286,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 **⭐ Star this repository if you find it useful!**
+
 
 
