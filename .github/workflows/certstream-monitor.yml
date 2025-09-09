@@ -52,7 +52,7 @@ jobs:
           - id: "tel"
             telegram_api_key: "$TELEGRAM_BOT_TOKEN"
             telegram_chat_id: "$TELEGRAM_CHAT_ID"
-            telegram_format: "<html><body><h3>Results</h3></br></br><pre><code>{{data}}</code></pre></body></html>"
+            telegram_format: "<pre><code>{{data}}</code></pre><br>________"
             telegram_parsemode: "HTML"
         EOF
         
