@@ -70,7 +70,7 @@ jobs:
             sub(/"/,"",$5); gsub(/"/,"",$5);  # clean quotes from title
             printf "%s | %s | %s | %s\n", $2, $3, $4, $5
           }' > awk.tmp ;
-        notify -silent -bulk -data awk.tmp 
+        notify -silent -data awk.tmp 
         else
           echo "No live subdomains found or file doesn't exist"
           echo "No live subdomains found in this run." | notify -silent -bulk
