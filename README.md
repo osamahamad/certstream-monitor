@@ -6,7 +6,7 @@
 
 Another Go tool that leverages certstream.calidog.io to monitor Certificate Transparency (CT) logs in real-time to discover subdomains for a given list of domains for research purposes within a specified domain age. Automatically probes discovered subdomains for liveness and extracts page titles.
 
-> **Inspired by**: [nashcontrol/bounty-monitor](https://github.com/nashcontrol/bounty-monitor)
+> **Inspired by**: [nashcontrol/bounty-monitor](https://github.com/nashcontrol/bounty-monitor) Meant to be used to discover targeted list of orgs assets new subdomains. 
 
 ## ✨ Features
 
@@ -284,6 +284,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 **⭐ Star this repository if you find it useful!**
+
 
 
 
